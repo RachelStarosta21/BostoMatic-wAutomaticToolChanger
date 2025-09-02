@@ -1,0 +1,15 @@
+%
+G17 G20 G40 G49 G54 G80 G90 G94
+O<retract_arm> call
+G0 X0 Y0 
+G1 Z-1 F100 
+G1 X2 Y0
+G1 X2 Y2
+O<go_home_safe> call 	 
+T1 M6 
+G1 X0 Y2
+G1 X0 Y0
+M2
+%
+
+

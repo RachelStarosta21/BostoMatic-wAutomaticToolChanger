@@ -1,0 +1,48 @@
+O<atc_changes> SUB
+
+;pretool change
+;P7 is our current sample input, it will be replaced 
+M64 P0  ;arm should always be retracted 
+(DEBUG, arm retracted)
+M65 P4  ;stop spindle
+M65 P5  ;stop coolant flood
+M65 P6  ;stop coolant mist
+(DEBUG, milling stopped and tool change arm is safe to extend)
+
+;toolchange (arm needs to be extended)! 
+M65 P0     ;retract tc arm off ONLY WHEN IT NEEDS TO BE EXTENDED IS THIS THING OFF
+M64 P2     ;extend tc arm on
+
+;checking for arm to be completely extended:
+
+M66 P7 L3 Q3   ; REPLACE WITH REAL INPUT:  wait until tc_prox_extend P3 to go low = correct position FOR TESTING
+(DEBUG, print #5399)
+O101 while [#5399 EQ -1]
+M66 P7 L3 Q3   ; REPLACE WITH REAL INPUT:  wait until tc_prox_extend P3 to go low = correct position FOR TESTING
+(DEBUG, IN LOOP print #5399)
+O101 endwhile
+(DEBUG, extended check, #5399 = 1.0000)
+
+
+;Tool change with carousel components 
+M0      ;pauses program, press play button to resume
+
+;post-tool change
+
+; arm needs to be retracted
+
+M65 P2     ;extend tc arm off
+M64 P0     ;retract tc arm on
+
+;checking for arm to be fully retracted:
+
+M66 P7 L3 Q2  ;  waiting on input from retract_proc signal to go low, which means it is in the correct position
+O11 while [#5399 LT 0]
+M66 P7 L3 Q2  ;  waiting on input from retract_proc signal to go low, which means it is in the correct position
+O11 endwhile
+
+
+(DEBUG, retracted check #5399 = 1.0000)
+
+
+O<atc_changes> ENDSUB [1]

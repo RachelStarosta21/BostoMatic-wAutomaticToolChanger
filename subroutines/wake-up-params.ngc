@@ -1,0 +1,19 @@
+O <wake-up-params> SUB
+(DEBUG, unpause to resume)
+(DEBUG, Machine Origin X: #<_abs_x>)
+(DEBUG, Machine Origin Y: #<_abs_y>)
+(DEBUG, Machine Origin Z: #<_abs_z>)
+(DEBUG, Machine Origin A: #<_abs_a>)
+
+(DEBUG, G28 X: #5161)
+(DEBUG, G28 Y: #5162)
+(DEBUG, G28 Z: #5163)
+(DEBUG, G28 A: #5164)
+(DEBUG, G28 B: #5165)
+(DEBUG, G28 C: #5166)
+(DEBUG, G28 U: #5167)
+(DEBUG, G28 V: #5168)
+(DEBUG, G28 W: #5169)
+M0
+O <wake-up-params> ENDSUB  [1]
+M2 

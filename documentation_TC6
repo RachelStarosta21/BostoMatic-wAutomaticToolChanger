@@ -1,0 +1,56 @@
+Documentation for BM312WithAM6TC6
+
+Features available:
+- Tool change arm extends and retracts using the respective M codes. 
+- Tool change arm proximal signals, to signal if the arm is in the right place or not, reflect the actual position of the machine.
+- Spindle, coolant mist and flood can be signaled manually. With the correct Motion pin used that is connected.
+- M6 remap is read and configured correctly in the ini file.
+- Carousel component has been loaded and some signals have been connected, and it does not disturb any pre-existing functionalities.
+
+Notes from any major discoveries or struggles (top to bottom = old to new) *notes pertaining only to this version are written after the NEW NEW bullet
+
+- The python folder with Remap, toplevel and stdglue files have been added to the correct place and when running the M6 command axis gives a pop up asking us to manually change the tool. Which is good.  The remap is actually being followed.
+- DONOT remove pyvcp_panel.xml the config is very unhappy. if it gets deleted then copy it and add it back to the main folder.
+- axis opens with no issues
+- in atc_changes (NOW SOLVED, below NEW):
+	- (TC1) The sub o-routine does not function properly due to not figured out yet (possibly) sytnax errors. The parameters are being read because of the call at the top of the file but the debug messages reveal the program is being read in a very funky way.  The debug messages are being printed regardless of the logic that they are surrounde by. 
+	- (TC1)The subroutine is also not happy with the syntax regarding the open and closing tags of the titles subroutines. Currently we are nesting a subroutine but this needs to be changed and solved. 
+	- The atc_changes looks completely different, due to the struggle with the O subroutine syntax we have decided to try the M6 functionality without (really) using a subroutine.  The atc_changes tags still exist and pose no problems currenltly however the nested subroutine is gone. The nested subroutine is replaced with M codes in order to check the functionality of the new motion control pins added to retract and extend the tool change arm.
+- in the custom HAL file 
+	- connections are added in order to output signals to retract and extend the arm
+	- The current connections to both tc_prox_xxx will need to be reconfigured as input signals NOT output. 
+	- The statements look like this:
+	- net tc_extend motion.digital-out-02 hm2_7i92.0.7i84.0.2.output-11
+	- Each connection has a specific name (first).  The selected motion.digital-out-NN where NN corresponds to a unique and pin number which will be used when calling them later in an M or O code (second).  And the selected corresonding pin on the mesa board. (last) 
+- atc_changes:
+	- The trouble with the o-code subroutines has been solved.
+	- The syntax is happy. Further trouble shooting is required to figure out exactly what the syntax is is required but not asap. 
+	- Inside the <atc_changes> subroutine there is now M codes written in kind of logical order. Logical in a way for the debugging/checking in Hal Config to watch them be turned on and off. Not in a logical way for the tool changer, this will be implemented later. 
+	- Mcodes from new pin output connections are tested and called.
+- custom.hal :
+	- Both tc_prox_xxx have been correctly changed to an input. CHECK
+	- nets have been added to coolant and spindle to their respective pin numbers. 
+	- Signals work as expected HOWEVER watch out because M66 and #5399 should really only by used with input pins. 
+	- Mesacard 7i84 is now being used for all pins regarding the tool changer instead of the 7i77.
+- The encoder is added inside PnCconfig so it is recognized, CHECK.
+- atc_changes:
+	- The commands are now being added/written in toolchange logical order.
+	- A manual encoder had been added to the mesa board such that when testing an input can be present(inputed).  This is used for crucial testing of the code in atc_changes to make sure it will work properly with the inputs eventually being read from the machine. 
+	- lines like: [M66 P7 L3 Q3; REPLACE WITH REAL INPUT:  wait until tc_prox_extend P3 to go low = correct position] have been added in placeholder postions so the program is closer to the final functionality. 
+	- Code successfully waits for input in order to continue running which is good, closer to its envisioned/final functinality. 
+- NEW NEW 
+- in atc_changes:
+	- loops have been added such that if the M66 command to wait for an input proves longer than expected or does awry we have more scope to see what occured. FIXED
+	- The loops have M66 wait 1 more second each time until the correct signal comes through
+	- M0 command is being used to pause the program before crucial moments for safetly checks.  Click resume to unpause. 
+- in the main HAL file:
+	- Use sserial_port_0=000xxxxx so far its the only one that works.  to sserial_port_0=003xxxxx and 030... they don't seem to cause compilation errors but cause major communication errors that break the system. 
+	- The proximity signals for the position of the tool changer arm now functions.  We swapped extend for retract and we are using the not signals of each... but accomplishing the right logic somehow with the a notnot not situation. 
+- WORKING GOAL: HOMING
+- in the INI file: 
+	- added 4 more parameters critical for homing under each linear axis (not including the A axis). The parameters added are: HOME_SEARCH_VELOCITY, HOME_LATCH_VELOCITY, HOME_FINAL_VELOCITY and HOME_USE_INDEX.  The assigned values that are currently archived for the _VELOCITY parameters are hypothesized to work but not tested. The HOME_USE_INDEX is set to YES because we will be using the index on the encoder to help inform the homing sequence. 
+	- The following parameters were pre-existing in the ini file but we changed (or not) them to the following: 
+		- The values in the HOMING_SEQUENCE are set such that Z is homed first and X and Y are homed together (synchronized). A last but that is so far not really implicated in the homing procedure as it is an angular axis. However it is a linear angular axis so maybe in the future but for now it is being purposefully neglected in the homing procedure. 
+		- All the values for HOME_OFFSET are 0.0. Which means that once the rising edge of the index is found that is the stopping place for "home".  The rising edge will be searched for during the HOME_FINAL_VELOCITY part of the homing sequence.  
+	- The MIN_LIMIT and MAX_LIMIT for each axis has been changed to reflect where we want the homing position to be, in the upper right (back or front, y) corner. 
+

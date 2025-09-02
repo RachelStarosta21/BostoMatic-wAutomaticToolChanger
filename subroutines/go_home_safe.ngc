@@ -1,0 +1,12 @@
+O <go_home_safe> SUB
+G90
+G53 G0 Z0
+G53 G0 X0 Y0
+(DEBUG, safely home, unpause to resume)
+(DEBUG, Machine Origin X: #<_abs_x>)
+(DEBUG, Machine Origin X: #<_abs_y>)
+(DEBUG, Machine Origin X: #<_abs_z>)
+(DEBUG, Machine Origin X: #<_abs_a>)
+M0
+O <go_home_safe> ENDSUB  [1]
+M2 

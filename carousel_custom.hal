@@ -1,0 +1,121 @@
+# Include your custom HAL commands here
+# This file will not be overwritten when you run PNCconf again
+
+#Correct Mesa Card : hm2_7i92.0.7i84.0.2.output-0N 
+#correct pins to (input: tb3 0-15)  (output tb2 8-15)
+
+#CAROUSEL COMPONENTS SECTION 
+# load components:
+#the carousel pid is loaded in the main halfile at the top 
+loadrt carousel pockets=12 encoding=counts dir=1    #ok
+
+#adding the carousel components to the real-time thread (servo)
+addf carousel.0 servo-thread    #ok
+addf pid.carousel.do-pid-calcs servo-thread  #ok
+
+#PID tuning parameters (ADJUST THESE)
+
+#setp hm2_7i92.0.encoder.05.scale  [FILL ME IN POSSIBLY: 15875.0]  #ok
+setp pid.carousel.Pgain 0.5	#ok
+setp pid.carousel.Igain 0.01	#ok
+setp pid.carousel.Dgain 0.001	#ok
+setp   pid.carousel.maxoutput 10.0	#ok
+setp   pid.carousel.maxerror 100     #max following error in counts   #ok
+setp   pid.carousel.deadband  5    #deadband in encoder counts  #ok
+# The number of stepgen or encoder counts between successive pockets (total count/12) trying : (1555/12)
+setp carousel.0.scale 129     #this is integer type not float   #OK
+
+#INPUT TO CAROUSEL (M66)
+# tool change control:
+net tool-number   => carousel.0.pocket-number   #OK
+net tool-change-request   => carousel.0.enable   #OK
+
+# Carousel postion determined by the encoder count
+net carousel-counts hm2_7i92.0.encoder.05.rawcounts => carousel.0.counts   #ok
+
+# Index for homing
+net carousel-index hm2_7i92.0.encoder.05.index-enable <=> carousel.0.index-enable    #ok
+
+# Manual jogging the carousel
+net jog-carousel-fwd hm2_7i92.0.7i84.0.2.input-02 => carousel.0.jog-fwd    #ok
+
+#drawbar sensor  #####################################################  NEEDS CHECKING
+net    DI-ATC-drawbar-sensor   <= hm2_7i92.0.7i84.0.2.input-03    #ok
+
+
+#####################################################  NEEDS CHECKING
+#Status input
+net 		carousel-active 		carousel.0.active   #ok
+net         carousel-homed      	carousel.0.homed	#ok
+net         carousel-ready      	carousel.0.ready	#ok
+
+#Status input:
+net 		carousel-homed			motion.digital-in-02	#ok
+net 		carousel-ready 			motion.digital-in-04	#ok
+net   		DI-ATC-drawbar-sensor 	motion.digital-in-00	#ok
+
+##################################################### 
+
+#Connections for the tool changer arm:
+
+#OUTPUT-TOOLCHANGER-ARM (M62-M65) 
+net tc_retract motion.digital-out-00 hm2_7i92.0.7i84.0.2.output-09
+net tc_extend motion.digital-out-02 hm2_7i92.0.7i84.0.2.output-10
+
+#INPUT-TOOLCHANGER-ARM  (M66) 
+net tc_prox_retract motion.digital-in-01 hm2_7i92.0.7i84.0.2.input-00 
+net tc_prox_extend motion.digital-in-03 hm2_7i92.0.7i84.0.2.input-01
+
+#OUTPUT-SPINDLE&COOLANT (M62-M65) 
+net spindle_enable motion.digital-out-04 hm2_7i92.0.7i84.0.2.output-11
+net coolant_flood motion.digital-out-05 hm2_7i92.0.7i84.0.2.output-12
+net coolant_mist motion.digital-out-06 hm2_7i92.0.7i84.0.2.output-13
+
+  
+
+
+#sample input below using the encoder and twisting it manually
+#net sample_input_16 motion.digital-in-07 hm2_7i92.0.encoder.05.input-a
+
+#####################################################
+# for copy and paste:   hm2_7i92.0.7i84.0.2.output-     hm2_7i92.0.7i84.0.2.input-
+#  ---manual tool change signals---
+
+#net tool-change-request    <= iocontrol.0.tool-change
+#net tool-change-confirmed  => iocontrol.0.tool-changed
+#net tool-number            <= iocontrol.0.tool-prep-number
+
+#  ---Use external manual tool change dialog---
+
+#net tool-change-request    =>  hal_manualtoolchange.change
+#net tool-change-confirmed  <=  hal_manualtoolchange.changed
+#net tool-number            =>  hal_manualtoolchange.number
+
+#  ---ignore tool prepare requests---
+#net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-prepared
+#####################################################
+
+#[ATC]   this goes in the ini file
+# Fill me in later, will be useful
+#G53 Coordinates for the ACTUAL Pocket Location (Tool in Clip) 
+#ATC_POCKET_X = 449.950
+#ATC_POCKET_Y = 1230.390
+#ATC_POCKET_Z = -166.180
+# Assuming that loading to wheel happens along Y
+# ABSOLUTE Distance for front SAFE position (in front of pocket at final hight, laterally moved along Y - With these Macros this will be SUBTRACTED from G53 coord ATC_POCKET_Y)
+#ATC_FRONT_SAFE_Y = 45
+# Absolute Coordinate Z Value above pocket for safely parking the EMPTY!! spindle while carousel is moving (also the Position from which the spindle dives onto the holder to grab it)
+#ATC_TOP_SAFE_Z = -116
+# Absolute distance the spindle will move away from the unclamped tool holder before cone cleaning and pushing the tool out 
+#ATC_LIFT_OFF_Z = 1
+# Speed with which the spindle pushed the tool holder into the pocket
+#ATC_PLACE_SPEED = 2000
+# Speed with which the unclamped tool is left in pocket
+#ATC_RELEASE_SPEED = 2000
+
+# motion.digital-out-NN pins
+#listed here in this format:
+#SENSOR_DRAWBAR = 04 
+# used in a .hal file like this: 
+# motion.digital-in-NN pins
+

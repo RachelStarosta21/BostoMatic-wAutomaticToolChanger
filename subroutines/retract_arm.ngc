@@ -1,0 +1,9 @@
+O<retract_arm> sub
+M64 P0  			;arm should always be retracted 
+M66 P1 L3 Q5  		; wait 5 sec for tc_prox_retract P1 to go high
+O10 if [[#5399 EQ 0 OR #5399 LT 0] AND [#<_task> EQ 1]]
+	(ABORT, arm is not retracted)
+O10 endif
+O<retract_arm> endsub [1]
+
+M2

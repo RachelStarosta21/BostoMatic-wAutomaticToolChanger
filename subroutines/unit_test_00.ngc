@@ -1,0 +1,132 @@
+;Description: 
+;this is a unit test to determine exactly what is happening with tc_prox retract and extend
+; signals when run with the machine, it runs through two scenarios, either the pins going high when in the correct
+;postion or going low when in the correct position.  Eventually we want them to go high when correct
+
+;arm begins retracted
+;extend arm, check if arm is extended
+
+O <unit_test_00> SUB
+M64 P0   ;retract arm
+(DEBUG, Test iteration 1: checking for activation by pins going low)
+(DEBUG, press play to resume program)
+M0 ; wait for arm to be retracted
+
+
+M65 P0    ;turn off retract
+M64 P2 	  ;turn on extend
+
+;this var below will be used for counting loop iterations 
+#8 = 0
+
+;Check that the arm is fully extended:
+M66 P3 L4 Q2    ;checking for extend proximity pin to go low
+
+O100 while [#5399 EQ -1]        ; program will continue to wait until extended P3 to go low
+M66 P3 L4 Q1  ;  for input with the machine, goes low when arm if fully extended  
+(DEBUG, IN LOOP print #5399)
+#8 = [1 + #8]
+O101 if [#5399 EQ 0]
+(DEBUG, input from tc_prox_extend is false)
+O101 elseif [#5399 EQ 1]
+(DEBUG, input from tc_prox_extend is true)
+O101 elseif [#8 / 5 EQ 1]
+(DEBUG, test input is not coming, exiting this loop and continue test)
+O100 break
+O101 endif
+O100 endwhile
+
+(DEBUG, loop exited 8 is reset)
+#8 = 0
+(DEBUG, press play to continue, Next step: retracting the arm)
+M0 ; press play to continue
+
+
+
+;retract arm 
+
+M65 P2   ; turn off extend
+M64 P0    ; turn on retract
+
+M66 P1 L4 Q2  ;wait for input from the machine. P0 goes LOW when arm is fully retracted
+
+O200 while [#5399 EQ -1]        ; program will continue to wait until extended P3 to go low
+M66 P1 L4 Q1  ;  for input with the machine, goes low when arm if fully extended  
+(DEBUG, IN LOOP print #5399)
+#8 = [1 + #8]
+O201 if [#5399 EQ 0]
+(DEBUG, input from tc_prox_retract is false)
+O201 elseif [#5399 EQ 1]
+(DEBUG, input from tc_prox_retract is true)
+O201 elseif [#8 / 5 EQ 1]
+(DEBUG, test input is not coming, exiting this loop and continue test)
+O200 break
+O201 endif
+O200 endwhile
+
+(DEBUG, loop exited)
+(DEBUG, press play to continue)
+#8 = 0
+M0 ; press play to continue
+
+(DEBUG, Next test iteration 2 : checking for activation by pins going high)
+
+M65 P0    ;turn off retract
+M64 P2 	  ;turn on extend
+
+
+;Check that the arm is fully extended:
+M66 P3 L3 Q2    ;
+(DEBUG, 5399 var is:  #5399)
+
+O300 while [#5399 EQ -1]        
+M66 P3 L3 Q1  
+(DEBUG, IN LOOP print #5399)
+#8 = [1 + #8]
+O301 if [#5399 EQ 0]
+(DEBUG, input from tc_prox_extend is false)
+O301 elseif [#5399 EQ 1]
+(DEBUG, input from tc_prox_extend is true)
+O301 elseif [#8 / 5 EQ 1]
+(DEBUG, test input is not coming, exiting this loop and continue test)
+O300 break
+O301 endif
+O300 endwhile
+
+
+(DEBUG, loop exited) 
+#8 = 0
+M0 ; press play to continue
+(DEBUG, press play to continue, Next step: retracting the arm)
+
+M65 P2   ; turn off extend
+M64 P0    ; turn on retract
+
+M66 P1 L3 Q2  ;wait for input from the machine. P0 goes LOW when arm is fully retracted
+(DEBUG, 5399 var is:  #5399)
+O400 while [#5399 EQ -1]        ; program will continue to wait until extended P3 to go low
+M66 P1 L3 Q1  ;  for input with the machine, goes low when arm if fully extended  
+(DEBUG, IN LOOP print #5399)
+#8 = [1 + #8]
+O401 if [#5399 EQ 0]
+(DEBUG, input from tc_prox_retract is false)
+O401 elseif [#5399 EQ 1]
+(DEBUG, input from tc_prox_retract is true)
+O401 elseif [#8 / 5 EQ 1]
+(DEBUG, test input is not coming, exiting this loop and continue test)
+O400 break
+O401 endif
+O400 endwhile
+
+(DEBUG, loop exited) 
+#8 = 0
+(DEBUG,  program paused end of program)
+
+
+O <unit_test_00> ENDSUB  [1]
+
+
+
+
+
+

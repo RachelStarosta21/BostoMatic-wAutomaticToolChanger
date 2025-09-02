@@ -1,0 +1,6 @@
+%
+G17 G20 G40 G49 G54 G80 G90 G94
+O<my_parameters> CALL 
+
+
+% 

@@ -1,0 +1,84 @@
+# Include your custom HAL commands here
+# This file will not be overwritten when you run PNCconf again
+
+#Correct Mesa Card : hm2_7i92.0.7i84.0.2.output-0N 
+#correct pins to (input: tb3 0-15)  (output tb2 8-15)
+
+#CAROUSEL COMPONENTS SECTION 
+# load components:
+#the carousel pid is loaded in the main halfile at the top 
+loadrt carousel pockets=12 encoding=counts dir=1  
+
+#adding the carousel components to the real-time thread (servo)
+addf carousel.0 servo-thread 
+addf pid.carousel.do-pid-calcs servo-thread  
+
+#PID tuning parameters (ADJUST THESE) add all of them 
+
+setp   pid.carousel.Pgain [ATC]P
+setp   pid.carousel.Igain [ATC]I
+setp   pid.carousel.Dgain [ATC]D
+setp   pid.carousel.maxoutput [ATC]MAX_OUTPUT
+setp   pid.carousel.maxerror [ATC]MAX_ERROR
+setp   pid.carousel.deadband [ATC]DEADBAND
+#setp   carousel.0.encoder_scale  [ATC]ENCODER_SCALE
+
+
+#INPUT TO CAROUSEL (M66)
+# tool change control:
+net tool-number   => carousel.0.pocket-number
+net tool-change-request   => carousel.0.enable
+
+# Carousel postion determined by the encoder count
+net carousel-counts hm2_7i92.0.encoder.05.rawcounts => carousel.0.counts
+
+# Index for homing
+net carousel-index hm2_7i92.0.encoder.05.index-enable <=> carousel.0.index-enable
+
+# Manual jogging the carousel
+net jog-carousel-fwd hm2_7i92.0.7i84.0.2.input-07 => carousel.0.jog-fwd
+
+#drawbar sensor  #####################################################  NEEDS CHECKING
+net    DI-ATC-drawbar-sensor   <= hm2_7i92.0.7i84.0.2.input-03
+
+
+#####################################################  NEEDS CHECKING
+#Status input
+net 		carousel-active 		carousel.0.active 
+net         carousel-homed      	carousel.0.homed
+net         carousel-ready      	carousel.0.ready
+
+#Status input:
+net 		carousel-homed			motion.digital-in-05
+net 		carousel-ready 			motion.digital-in-04
+net   		DI-ATC-drawbar-sensor 	motion.digital-in-00
+
+##################################################### 
+
+#Connections for the tool changer arm:
+
+#OUTPUT-TOOLCHANGER-ARM (M62-M65) 
+net tc_retract motion.digital-out-00 hm2_7i92.0.7i84.0.2.output-09
+net tc_extend motion.digital-out-02 hm2_7i92.0.7i84.0.2.output-10
+
+#INPUT-TOOLCHANGER-ARM  (M66) swapped but accomplishing the right logic somehow with the a notnot not situation
+#testing so they can be correctly labeled I've switched the motion pin numbers 
+net tc_prox_extend motion.digital-in-03 hm2_7i92.0.7i84.0.2.input-00-not 
+net tc_prox_retract motion.digital-in-01 hm2_7i92.0.7i84.0.2.input-01-not
+
+
+#OUTPUT-SPINDLE&COOLANT (M62-M65) 
+net spindle_enable motion.digital-out-04 hm2_7i92.0.7i84.0.2.output-11
+net coolant_flood motion.digital-out-05 hm2_7i92.0.7i84.0.2.output-12
+net coolant_mist motion.digital-out-06 hm2_7i92.0.7i84.0.2.output-13
+
+  
+
+
+#sample input below using the encoder and twisting it manually
+#net sample_input_16 motion.digital-in-07 hm2_7i92.0.encoder.05.input-a
+
+#figure out the not not working, this is preswap
+#net tc_prox_retract motion.digital-in-01 hm2_7i92.0.7i84.0.2.input-00-not 
+#net tc_prox_extend motion.digital-in-03 hm2_7i92.0.7i84.0.2.input-01-not
+
