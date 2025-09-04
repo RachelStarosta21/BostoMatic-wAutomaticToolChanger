@@ -145,9 +145,14 @@ net y-pos-rawcounts        <=  hm2_7i92.0.encoder.01.rawcounts
 
 # ---setup home / limit switch signals---
 
-net y-home-sw     =>  joint.1.home-sw-in
-net y-neg-limit     =>  joint.1.neg-lim-sw-in
-net y-pos-limit     =>  joint.1.pos-lim-sw-in
+#net y-home-sw     =>  joint.1.home-sw-in
+#net y-neg-limit     =>  joint.1.neg-lim-sw-in
+#net y-pos-limit     =>  joint.1.pos-lim-sw-in
+
+
+net y-limits    hm2_7i92.0.7i84.0.2.input-03  => joint.1.home-sw-in
+net y-limits	joint.1.neg-lim-sw-in
+net y-limits    joint.1.pos-lim-sw-in 
 
 #*******************
 #  AXIS Z JOINT 2
@@ -197,9 +202,14 @@ net z-pos-rawcounts        <=  hm2_7i92.0.encoder.02.rawcounts
 
 # ---setup home / limit switch signals---
 
-net z-home-sw     =>  joint.2.home-sw-in
-net z-neg-limit     =>  joint.2.neg-lim-sw-in
-net z-pos-limit     =>  joint.2.pos-lim-sw-in
+#net z-home-sw     =>  joint.2.home-sw-in
+#net z-neg-limit     =>  joint.2.neg-lim-sw-in
+#net z-pos-limit     =>  joint.2.pos-lim-sw-in
+
+
+net z-limits    hm2_7i92.0.7i84.0.2.input-04  => joint.2.home-sw-in
+net z-limits	joint.2.neg-lim-sw-in
+net z-limits    joint.2.pos-lim-sw-in 
 
 #*******************
 #  AXIS A JOINT 3
@@ -249,9 +259,9 @@ net a-pos-rawcounts        <=  hm2_7i92.0.encoder.04.rawcounts
 
 # ---setup home / limit switch signals---
 
-net a-home-sw     =>  joint.3.home-sw-in
-net a-neg-limit     =>  joint.3.neg-lim-sw-in
-net a-pos-limit     =>  joint.3.pos-lim-sw-in
+#net a-home-sw     =>  joint.3.home-sw-in
+#net a-neg-limit     =>  joint.3.neg-lim-sw-in
+#net a-pos-limit     =>  joint.3.pos-lim-sw-in
 
 #*******************
 #  SPINDLE
