@@ -31,6 +31,17 @@ set ::watchlist {
     pin+joint.0.f-error
     pin+joint.0.f-errored
     pin+joint.0.faulted
+    pin+hm2_7i92.0.encoder.00.index-enable
+    pin+hm2_7i92.0.encoder.00.position
+    pin+hm2_7i92.0.encoder.00.velocity
+    pin+joint.0.index-enable
+    pin+hm2_7i92.0.encoder.00.input-a
+    pin+hm2_7i92.0.encoder.00.input-b
+    pin+hm2_7i92.0.encoder.00.rawcounts
+    pin+hm2_7i92.0.encoder.00.rawlatch
+    pin+hm2_7i92.0.encoder.00.reset
+    pin+hm2_7i92.0.encoder.00.velocity-rpm
+    pin+hm2_7i92.0.7i77.0.1.analogout0
 }
 set ::workmode watchhal
 set ::watchInterval 100
