@@ -39,7 +39,7 @@ net carousel-index hm2_7i92.0.encoder.05.index-enable <=> carousel.0.index-enabl
 net jog-carousel-fwd hm2_7i92.0.7i84.0.2.input-07 => carousel.0.jog-fwd
 
 #drawbar sensor  #####################################################  NEEDS CHECKING
-net    DI-ATC-drawbar-sensor   <= hm2_7i92.0.7i84.0.2.input-03
+net    DI-ATC-drawbar-sensor   <= hm2_7i92.0.7i84.0.2.input-05
 
 
 #####################################################  NEEDS CHECKING
